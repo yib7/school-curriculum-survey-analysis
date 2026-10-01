@@ -1,0 +1,8 @@
+# Survey microdata belongs to the research team and is not published here
+data/
+*.csv
+*.sav
+*.dta
+.Rhistory
+.RData
+.Rproj.user/
