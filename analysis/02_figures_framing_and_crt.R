@@ -7,11 +7,11 @@
 #   (2) Partisanship breakdown: Anti-CRT support by party identity (pid7)
 #       to show that ideology, not demographics, drives opposition
 #
-# OUTPUT: All plots saved as PNG files to ./saved_output_survey/
+# OUTPUT: All plots saved as PNG files to ./figures/
 # =============================================================================
 
 # --- Create output folder if it doesn't already exist ----------------------
-output_dir <- "saved_output_survey"
+output_dir <- "figures"
 if (!dir.exists(output_dir)) {
   dir.create(output_dir)
   cat(paste0("Created output folder: ", output_dir, "/\n"))
@@ -27,6 +27,17 @@ library(ggplot2)
 path_cces <- "data/CCES23_VAN_OUTPUT.sav"
 path_vand <- "data/VAND0049_OUTPUT_numeric.csv"
 # ----------------------------------------------------------------------------
+
+# Stop with a clear message if the survey files are not in data/ (they are not published here).
+# Run this script from the repository root so the relative paths below resolve.
+missing_files <- c(path_cces, path_vand)
+missing_files <- missing_files[!file.exists(missing_files)]
+if (length(missing_files) > 0) {
+  stop("Missing data file(s): ", paste(missing_files, collapse = ", "),
+       "
+Put the survey files in data/ at the repository root and run from there (see README).",
+       call. = FALSE)
+}
 
 
 # =============================================================================
@@ -177,8 +188,8 @@ cat("Saved: plot1_trump_framing_interaction.png\n")
 # anti-CRT laws is "driven almost entirely by partisan identity." This plot
 # makes that argument visually: as respondents move from Strong Democrat (1)
 # to Strong Republican (7) on the pid7 scale, the proportion favoring
-# restrictions climbs steeply while opposition collapses. Demographic
-# factors (gender, race) were not significant; partisanship dominated.
+# restrictions climbs steeply while opposition collapses. In the regression,
+# gender had no significant effect; race did (see the report text).
 #
 # HOW TO READ IT: The stacked bars show the distribution of anti-CRT
 # stances for each point on the 7-point party ID scale. The right-ward

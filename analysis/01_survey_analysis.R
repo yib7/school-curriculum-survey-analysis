@@ -8,9 +8,23 @@ path_cces <- "data/CCES23_VAN_OUTPUT.sav"
 path_vand <- "data/VAND0049_OUTPUT_numeric.csv"
 path_rps  <- "data/RPS Wave 1.csv"
 
+# Stop with a clear message if the survey files are not in data/ (they are not published here).
+# Run this script from the repository root so the relative paths below resolve.
+missing_files <- c(path_cces, path_vand, path_rps)
+missing_files <- missing_files[!file.exists(missing_files)]
+if (length(missing_files) > 0) {
+  stop("Missing data file(s): ", paste(missing_files, collapse = ", "),
+       "
+Put the survey files in data/ at the repository root and run from there (see README).",
+       call. = FALSE)
+}
+
 
 # Section 1: CCES23 data (looking at VAN025 & VAN026)
 
+# as_factor() orders the VAN025/VAN026 levels 1-7, so as.numeric() below returns the scale value.
+# VAN030 is the exception: its levels run from "Strongly agree" down, so it enters the models
+# reverse-coded. It is a control only and none of the reported claims depend on its direction.
 df_cces <- as_factor(read_sav(path_cces))
 
 # VAN025: schools race wording

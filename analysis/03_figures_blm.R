@@ -10,13 +10,12 @@
 #           variables (Q37_1 through Q37_7) from the RPS Wave 1 regression.
 #           Directly supports the report's parental socialization argument.
 
-library(haven)
 library(dplyr)
 library(ggplot2)
 library(broom)   # tidy() extracts regression coefficients into a clean data frame
 
 # --- Output folder (create if missing) --------------------------------------
-output_dir <- "saved_output_survey"
+output_dir <- "figures"
 if (!dir.exists(output_dir)) {
   dir.create(output_dir)
   cat(paste0("Created output folder: ", output_dir, "/\n"))
@@ -25,20 +24,30 @@ if (!dir.exists(output_dir)) {
 }
 
 # ---- File paths (update to match your local setup) -------------------------
-path_cces <- "data/CCES23_VAN_OUTPUT.sav"
-path_vand <- "data/VAND0049_OUTPUT_numeric.csv"
-path_rps  <- "data/RPS Wave 1.csv"
+path_rps <- "data/RPS Wave 1.csv"
 # ----------------------------------------------------------------------------
+
+# Stop with a clear message if the survey files are not in data/ (they are not published here).
+# Run this script from the repository root so the relative paths below resolve.
+missing_files <- c(path_rps)
+missing_files <- missing_files[!file.exists(missing_files)]
+if (length(missing_files) > 0) {
+  stop("Missing data file(s): ", paste(missing_files, collapse = ", "),
+       "
+Put the survey files in data/ at the repository root and run from there (see README).",
+       call. = FALSE)
+}
 
 
 # =============================================================================
 # PLOT 3: Parental Socialization Coefficient Plot (RPS Wave 1 / BLM)
 #
-# The report claims that "parental discussions about police behavior, racial
-# equality, and Black historical figures" strongly predict BLM support, while
-# "respectability politics" messaging collapses it. This plot makes that
-# hierarchy visible by showing the OLS regression coefficient for each of
-# the seven Q37 parental socialization items, with 95% confidence intervals.
+# The report finds that parents who taught about White privilege (+0.153),
+# equality (+0.092) and important historical figures (+0.073) were more
+# supportive of BLM, while parents who taught that Black people should be more
+# respectful to police (-0.158) were less supportive. This plot shows the OLS
+# coefficient for each of the seven Q37 items (frequency of telling, 1-4),
+# with 95% confidence intervals.
 #
 # HOW TO READ IT:
 #   - Each dot is the estimated effect of that parental topic on BLM support
@@ -122,9 +131,9 @@ plot_blm_coefs <- ggplot(blm_coefs,
   # Vertical zero line — anything crossing this is not significant
   geom_vline(xintercept = 0, linetype = "dashed", color = "gray50", linewidth = 0.8) +
   # Horizontal confidence interval bars
-  geom_errorbarh(
+  geom_errorbar(
     aes(xmin = conf.low, xmax = conf.high),
-    height = 0.25, linewidth = 0.9
+    orientation = "y", width = 0.25, linewidth = 0.9
   ) +
   # The coefficient dots
   geom_point(size = 4.5) +
@@ -154,11 +163,10 @@ plot_blm_coefs <- ggplot(blm_coefs,
   theme_minimal(base_size = 13) +
   labs(
     title    = "Which Family Conversations Predicted BLM Support?",
-    subtitle = paste0(),
     x        = "Estimated Effect on BLM Support Score (1-4 scale)",
     y        = NULL,
     color    = "Direction",
-    shape    = "Significance")
+    shape    = "Significance") +
   theme(
     plot.title       = element_text(face = "bold", size = 14),
     plot.subtitle    = element_text(size = 11, color = "gray30"),

@@ -6,3 +6,5 @@ data/
 .Rhistory
 .RData
 .Rproj.user/
+# created in the working directory when scripts run non-interactively
+Rplots.pdf
